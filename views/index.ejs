@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dojo Survey</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dojo_survey_style.css') }}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type ="text/javascript">
+        $(document). ready(function(){
+            // this triggers the connection event in our server!
+            var socket  = io.connect();
+            // we'll write all the socket stuff after the above line!
+            $('#submitbutton').click(function(event){
+            	socket.emit('posting_form', {
+            		name: $('#name').val(),
+            		location: $('#location').val(),
+            		language: $('#language').val(),
+            		comments: $('#comments').val()
+            	});
+            	
+         //    	socket.on('updated_message', function(data){
+       		// 	console.log(data)
+       		// })
+       		});
+       		socket.on('updated_message', function(data) {
+                console.log('The server says: ' + data.name);
+                $("#survey_form").html("You emitted the following information to the server:"
+            +"<p>"+ data.name +"</p>"+"<p>"+ data.location +"</p>"+"<p>"+ data.language +"</p>"+"<p>"+ data.comments +"</p>");
+            });
+            socket.on('number', function(number){
+            	$("#number").html('<p>Your number is: ' + number);
+            });
+        });
+       
+    </script>
+</head>
+<body>
+	<div style="text-align: center">
+		<div style="border: 1px solid black; display: inline-block; padding: 10px; text-align: left; margin-top: 100px;">
+			<div id="survey_form"></div>
+			<div id="number"></div>
+			<fieldset>
+			    <form id="form">
+				    <div id="forms">
+				        <label>Name: </label>
+				        <input type="text" name="name" id="name">
+				   	</div>
+				   	<div >
+				        <label>Dojo Location</label>
+				        <select name="location" id="location">
+				   	 		<option value="San Jose">San Jose</option>
+				    		<option value="Seattle">Seattle</option>
+				    		<option value="Dallas">Dallas</option>
+				    		<option value="Los Angeles">Los Angeles</option>
+				    		<option value="Chicago">Chicago</option>
+				    		<option value="DC">Washington D.C.</option>
+				    		<option value="Tulsa">Tulsa</option>
+						</select>
+					</div>
+					<div>
+						<label>Favorite Language</label>
+						<select name="language" id="language">
+				   	 		<option value="Python">Python</option>
+				    		<option value="C#">C#</option>
+				    		<option value="Swift">Swift</option>
+				    		<option value="Ruby">Ruby</option>
+				    		<option value="JavaScript">JavaScript</option>
+				    		<option value="Java">Java</option>
+						</select>
+						<div>
+							<label>Comments (optional):</label><br>
+							<textarea name="comments" id="comments"></textarea>
+						</div>
+					</div>
+					
+				        
+			    </form>
+			    <div>
+				        	<input id="submitbutton" type="submit" value="Submit">
+				        </div>
+			</fieldset>
+		</div>
+	</div>
+</body>
+</html>
